@@ -1,6 +1,8 @@
+using Context.ResultsContext.ContextResults;
+using Context.ResultsContext.ContextResults.ContextResultExtensions;
 using Results;
 
-namespace ResultsContext.Tests;
+namespace Context.Tests.ResultContextTests;
 
 public static class FailureContext
 {

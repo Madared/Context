@@ -1,8 +1,6 @@
-using Results;
-using ResultsContext.ContextResults;
-using ResultsContext.ContextResults.ContextResultExtensions;
+using Context.ResultsContext.ContextResults;
 
-namespace ResultsContext.Tests;
+namespace Context.Tests.ResultContextTests;
 
 public class FailedContextResult
 {

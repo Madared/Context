@@ -1,8 +1,8 @@
+using Context.ResultsContext.ContextResults;
+using Context.ResultsContext.ContextResults.ContextResultExtensions;
 using Results;
-using ResultsContext.ContextResults;
-using ResultsContext.ContextResults.ContextResultExtensions;
 
-namespace ResultsContext.Tests;
+namespace Context.Tests.ResultContextTests;
 
 public class FromFailedResult
 {

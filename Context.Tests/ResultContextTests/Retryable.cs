@@ -1,6 +1,6 @@
 using Results;
 
-namespace ResultsContext.Tests;
+namespace Context.Tests.ResultContextTests;
 
 public class Retryable
 {

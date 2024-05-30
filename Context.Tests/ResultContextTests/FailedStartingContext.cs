@@ -1,7 +1,7 @@
+using Context.ResultsContext.ContextResults;
 using Results;
-using ResultsContext.ContextResults;
 
-namespace ResultsContext.Tests;
+namespace Context.Tests.ResultContextTests;
 
 public class FailedStartingContext
 {
