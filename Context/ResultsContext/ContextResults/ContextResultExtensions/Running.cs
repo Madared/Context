@@ -15,14 +15,14 @@ public static class Running
         IActionCallableGenerator undoGenerator = new ActionCallableGenerator(Nothing.DoNothing);
         ICommandGenerator commandGenerator = new CallableCommandGenerator(doGenerator, undoGenerator);
         ICommand command = commandGenerator.Generate();
-        return new SimpleContextResult(Option<IContextResult>.None(), command, commandGenerator, command.Call());
+        return new ContextResultOfAction(Option<IContextResult>.None(), command, commandGenerator, command.Call());
     }
 
     public static IContextResult<TOut> RunAndGetContext<TOut>(this Func<Result<TOut>> function) where TOut : notnull
     {
         ICallableGenerator<TOut> callableGenerator = new CallableGeneratorWithSimpleInput<TOut>(function);
         ICallable<TOut> callable = callableGenerator.Generate();
-        return new ContextResult<TOut>(callable, Option<IContextResult>.None(), callable.Call(), callableGenerator,
+        return new ContextResultOfCallable<TOut>(callable, Option<IContextResult>.None(), callable.Call(), callableGenerator,
             new ResultEmitter<TOut>());
     }
 }

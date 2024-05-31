@@ -1,4 +1,6 @@
-namespace Context.ResultsContext.ActionCallables;
+using Context.ResultsContext.ActionCallables;
+
+namespace Context.ResultsContext.CallableGenerators;
 
 internal sealed class ActionCallableGenerator : IActionCallableGenerator
 {

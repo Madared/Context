@@ -8,7 +8,7 @@ using ResultAndOption.Results;
 
 namespace Context.ResultsContext.ContextResults;
 
-internal class SimpleContextResult : IContextResult
+internal class ContextResultOfAction : IContextResult
 {
     private readonly ICommand _command;
     private readonly ICommandGenerator _commandGenerator;
@@ -17,7 +17,7 @@ internal class SimpleContextResult : IContextResult
     private bool _undone;
     private Result ActiveResult => _undone ? Result.Fail(new ContextHasBeenUndone()) : _result;
 
-    public SimpleContextResult(Option<IContextResult> previousContext, ICommand command,
+    public ContextResultOfAction(Option<IContextResult> previousContext, ICommand command,
         ICommandGenerator commandGenerator, Result result)
     {
         _previousContext = previousContext;
@@ -30,10 +30,7 @@ internal class SimpleContextResult : IContextResult
     public bool Failed => ActiveResult.Failed;
     public IError Error => ActiveResult.Error;
 
-    public Result StripContext()
-    {
-        return ActiveResult;
-    }
+    public Result StripContext() => ActiveResult;
 
     public void Undo()
     {
@@ -46,17 +43,17 @@ internal class SimpleContextResult : IContextResult
     {
         ICommand command = commandGenerator.Generate();
         return Failed
-            ? new SimpleContextResult(this.ToOption<IContextResult>(), command, commandGenerator, Result.Fail(Error))
-            : new SimpleContextResult(this.ToOption<IContextResult>(), command, commandGenerator, command.Call());
+            ? new ContextResultOfAction(this.ToOption<IContextResult>(), command, commandGenerator, Result.Fail(Error))
+            : new ContextResultOfAction(this.ToOption<IContextResult>(), command, commandGenerator, command.Call());
     }
 
     public IContextResult<TOut> Map<TOut>(ICallableGenerator<TOut> callableGenerator) where TOut : notnull
     {
         ICallable<TOut> callable = callableGenerator.Generate();
         return Failed
-            ? new ContextResult<TOut>(callable, this.ToOption<IContextResult>(), Result<TOut>.Fail(Error),
+            ? new ContextResultOfCallable<TOut>(callable, this.ToOption<IContextResult>(), Result<TOut>.Fail(Error),
                 callableGenerator, new ResultEmitter<TOut>())
-            : new ContextResult<TOut>(callable, this.ToOption<IContextResult>(), callable.Call(), callableGenerator,
+            : new ContextResultOfCallable<TOut>(callable, this.ToOption<IContextResult>(), callable.Call(), callableGenerator,
                 new ResultEmitter<TOut>());
     }
 
@@ -64,11 +61,11 @@ internal class SimpleContextResult : IContextResult
     {
         if (Succeeded) return this;
         if (_previousContext.IsNone())
-            return new SimpleContextResult(Option<IContextResult>.None(), _command, _commandGenerator, _command.Call());
+            return new ContextResultOfAction(Option<IContextResult>.None(), _command, _commandGenerator, _command.Call());
         IContextResult retried = _previousContext.Data.Retry();
         ICommand command = _commandGenerator.Generate();
         return retried.Failed
-            ? new SimpleContextResult(_previousContext, command, _commandGenerator, Result.Fail(retried.Error))
-            : new SimpleContextResult(_previousContext, command, _commandGenerator, _command.Call());
+            ? new ContextResultOfAction(_previousContext, command, _commandGenerator, Result.Fail(retried.Error))
+            : new ContextResultOfAction(_previousContext, command, _commandGenerator, _command.Call());
     }
 }
