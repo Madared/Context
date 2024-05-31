@@ -1,7 +1,10 @@
 using Context.ResultsContext.CallableGenerators;
 using Context.ResultsContext.ContextCallables;
 using Context.ResultsContext.ContextCommands;
-using Results;
+using ResultAndOption.Errors;
+using ResultAndOption.Options;
+using ResultAndOption.Options.Extensions;
+using ResultAndOption.Results;
 
 namespace Context.ResultsContext.ContextResults;
 
@@ -14,8 +17,12 @@ internal sealed class ContextResult<TOut> : IContextResult<TOut> where TOut : no
     private bool _undone;
     private Result<TOut> ActiveResult => _undone ? Result<TOut>.Fail(new ContextHasBeenUndone()) : _result;
 
-    public ContextResult(ICallable<TOut> called, Option<IContextResult> previousContext, Result<TOut> result,
-        ICallableGenerator<TOut> callableGenerator, ResultEmitter<TOut> emitter)
+    public ContextResult(
+        ICallable<TOut> called,
+        Option<IContextResult> previousContext,
+        Result<TOut> result,
+        ICallableGenerator<TOut> callableGenerator,
+        ResultEmitter<TOut> emitter)
     {
         _called = called;
         _previousContext = previousContext;

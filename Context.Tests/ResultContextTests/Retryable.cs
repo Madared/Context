@@ -1,4 +1,3 @@
-using Results;
 
 namespace Context.Tests.ResultContextTests;
 

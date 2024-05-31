@@ -1,6 +1,7 @@
 using Context.ResultsContext.CallableGenerators;
 using Context.ResultsContext.ContextCommands;
-using Results;
+using ResultAndOption.Results;
+using ResultAndOption.Results.GenericResultExtensions;
 
 namespace Context.ResultsContext.ContextResults;
 

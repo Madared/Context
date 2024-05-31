@@ -1,6 +1,4 @@
 using Context.ResultsContext.ContextResults;
-using Context.ResultsContext.ContextResults.ContextResultExtensions;
-using Results;
 
 namespace Context.Tests.ResultContextTests;
 

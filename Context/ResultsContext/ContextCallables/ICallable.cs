@@ -1,4 +1,5 @@
-using Results;
+using ResultAndOption.Results;
+using ResultAndOption.Results.GenericResultExtensions;
 
 namespace Context.ResultsContext.ContextCallables;
 
