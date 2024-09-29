@@ -1,9 +1,10 @@
 using Context.ResultsContext.ContextCallables;
 using ResultAndOption.Results;
+using ResultAndOption.Results.Commands;
 
 namespace Context.ResultsContext.ContextCommands;
 
-public interface ICommand : ICallable
+public interface IUndoableCommand : IResultCommand
 {
     void Undo();
 }
@@ -14,11 +15,6 @@ public interface ICommandWithInput<in T> where T : notnull
     void Undo(T data);
 }
 
-public interface ICommandWithUndoInput<in T> where T : notnull
-{
-    Result Call();
-    void Undo(T data);
-}
 
 public interface ICommandWithCallInput<in T> where T : notnull
 {

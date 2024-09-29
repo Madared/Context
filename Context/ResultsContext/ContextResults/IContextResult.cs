@@ -11,7 +11,7 @@ public interface IContextResult : IResult
     Result StripContext();
     void Undo();
     internal IContextResult Do(ICommandGenerator commandGenerator);
-    internal IContextResult<TOut> Map<TOut>(ICallableGenerator<TOut> callableGenerator) where TOut : notnull;
+    internal IContextResult<TOut> Map<TOut>(IResultGetterGenerator<TOut> resultGetterGenerator) where TOut : notnull;
 }
 
 public interface IContextResult<TOut> : IContextResult, IResult<TOut> where TOut : notnull

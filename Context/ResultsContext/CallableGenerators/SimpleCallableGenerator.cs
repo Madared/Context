@@ -1,19 +1,16 @@
 using Context.ResultsContext.ContextCallables;
 using ResultAndOption.Results;
+using ResultAndOption.Results.Commands;
 
 namespace Context.ResultsContext.CallableGenerators;
 
-internal sealed class SimpleCallableGenerator : ICallableGenerator
+internal sealed class SimpleResultCommandGenerator : IResultCommandGenerator
 {
     private readonly Func<Result> _action;
 
-    public SimpleCallableGenerator(Func<Result> action)
+    public SimpleResultCommandGenerator(Func<Result> action)
     {
         _action = action;
     }
-
-    public ICallable Generate()
-    {
-        return new NoInputSimpleCallable(_action);
-    }
+    public IResultCommand Generate() => new ContextCallables.SimpleResultCommandGenerator(_action);
 }

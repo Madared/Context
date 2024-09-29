@@ -73,25 +73,18 @@ public class MapChainFromSuccessContext
     }
 }
 
-public class SideEffector2 : ICommand
+public class SideEffector2 : IUndoableCommand
 {
     public int TimesMutated { get; private set; }
 
-    public Result Call()
+    public Result Do()
     {
         Mutate();
         return Result.Ok();
     }
 
-    public void Undo()
-    {
-        TimesMutated--;
-    }
-
-    public void Mutate()
-    {
-        TimesMutated++;
-    }
+    public void Undo() => TimesMutated--;
+    public void Mutate() => TimesMutated++;
 }
 
 public class SideEffector

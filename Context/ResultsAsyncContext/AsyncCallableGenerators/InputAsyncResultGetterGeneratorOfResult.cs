@@ -1,22 +1,23 @@
 using Context.ResultsAsyncContext.AsyncCallables;
 using Context.ResultsContext.ContextResults;
 using ResultAndOption.Results;
+using ResultAndOption.Results.Getters;
 
 namespace Context.ResultsAsyncContext.AsyncCallableGenerators;
 
-internal sealed class InputAsyncCallableGeneratorOfResult<TIn, TOut> : IAsyncCallableGenerator<TOut>
+internal sealed class InputAsyncResultGetterGeneratorOfResult<TIn, TOut> : IAsyncResultGetterGenerator<TOut>
     where TOut : notnull where TIn : notnull
 {
     private readonly Func<TIn, Task<Result<TOut>>> _func;
     private readonly ResultSubscriber<TIn> _subscriber;
 
-    public InputAsyncCallableGeneratorOfResult(Func<TIn, Task<Result<TOut>>> func, ResultSubscriber<TIn> subscriber)
+    public InputAsyncResultGetterGeneratorOfResult(Func<TIn, Task<Result<TOut>>> func, ResultSubscriber<TIn> subscriber)
     {
         _func = func;
         _subscriber = subscriber;
     }
 
-    public IAsyncCallable<TOut> Generate()
+    public IAsyncResultGetter<TOut> Generate()
     {
         Result<TIn> data = _subscriber.Result;
         if (data.Failed)

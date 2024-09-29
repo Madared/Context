@@ -1,8 +1,9 @@
 using ResultAndOption.Results;
+using ResultAndOption.Results.Getters;
 
 namespace Context.ResultsAsyncContext.AsyncCallables;
 
-internal sealed class SimpleAsyncCallable<T> : IAsyncCallable<T> where T : notnull
+internal sealed class SimpleAsyncCallable<T> : IAsyncResultGetter<T> where T : notnull
 {
     private readonly Func<Task<Result<T>>> _func;
 
@@ -11,5 +12,5 @@ internal sealed class SimpleAsyncCallable<T> : IAsyncCallable<T> where T : notnu
         _func = func;
     }
 
-    public Task<Result<T>> Call() => _func();
+    public Task<Result<T>> Get(CancellationToken? token) => _func();
 }

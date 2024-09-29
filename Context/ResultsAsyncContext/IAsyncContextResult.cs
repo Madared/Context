@@ -8,7 +8,7 @@ public interface IAsyncContextResult : IResult
 {
     Task<IAsyncContextResult> Retry();
     Task Undo();
-    Task<IAsyncContextResult<T>> Map<T>(IAsyncCallableGenerator<T> asyncCallableGenerator) where T : notnull;
+    Task<IAsyncContextResult<T>> Map<T>(IAsyncResultGetterGenerator<T> asyncResultGetterGenerator) where T : notnull;
     IAsyncContextResult Do(IAsyncCommandGenerator asyncCommandGenerator);
 }
 

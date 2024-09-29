@@ -1,4 +1,6 @@
+using Context.ResultsContext.CallableGenerators;
 using Context.ResultsContext.ContextResults;
+using ResultAndOption.Results.Commands;
 
 namespace Context.ResultsContext.ContextCommands;
 
@@ -13,8 +15,8 @@ internal sealed class CommandWithInputWrapperGenerator<T> : ICommandGenerator wh
         _command = command;
     }
 
-    public ICommand Generate()
+    public IUndoableCommand Generate()
     {
-        return new CommandWithInputWrapper<T>(_subscriber.Result, _command);
+        return new UndoableCommandWithInputWrapper<T>(_subscriber.Result, _command);
     }
 }

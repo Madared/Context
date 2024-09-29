@@ -5,30 +5,31 @@ using ResultAndOption.Errors;
 using ResultAndOption.Options;
 using ResultAndOption.Options.Extensions;
 using ResultAndOption.Results;
+using ResultAndOption.Results.Getters;
 
 namespace Context.ResultsContext.ContextResults;
 
 internal sealed class ContextResultOfCallable<TOut> : IContextResult<TOut> where TOut : notnull
 {
-    private readonly ICallableGenerator<TOut> _callableGenerator;
-    private readonly ICallable<TOut> _called;
+    private readonly IResultGetterGenerator<TOut> _resultGetterGenerator;
+    private readonly IResultGetter<TOut> _getter;
     private readonly Option<IContextResult> _previousContext;
     private readonly Result<TOut> _result;
     private bool _undone;
     private Result<TOut> ActiveResult => _undone ? Result<TOut>.Fail(new ContextHasBeenUndone()) : _result;
 
     public ContextResultOfCallable(
-        ICallable<TOut> called,
+        IResultGetter<TOut> getter,
         Option<IContextResult> previousContext,
         Result<TOut> result,
-        ICallableGenerator<TOut> callableGenerator,
+        IResultGetterGenerator<TOut> resultGetterGenerator,
         ResultEmitter<TOut> emitter)
     {
-        _called = called;
+        _getter = getter;
         _previousContext = previousContext;
         _result = result;
         Emitter = emitter;
-        _callableGenerator = callableGenerator;
+        _resultGetterGenerator = resultGetterGenerator;
     }
 
     public ResultEmitter<TOut> Emitter { get; }
@@ -51,23 +52,23 @@ internal sealed class ContextResultOfCallable<TOut> : IContextResult<TOut> where
 
     public IContextResult<TOut> Do(ICommandGenerator commandGenerator)
     {
-        ICommand command = commandGenerator.Generate();
+        IUndoableCommand undoableCommand = commandGenerator.Generate();
         ResultSubscriber<TOut> subscriber = new(_result);
         Emitter.Subscribe(subscriber);
-        ICallableGenerator<TOut> callableGenerator = new ResultGetterCallableGenerator<TOut>(subscriber);
+        IResultGetterGenerator<TOut> resultGetterGenerator = new SimpleResultGetterGenerator<TOut>(subscriber);
         IContextResult simpleContext = Failed
-            ? new ContextResultOfAction(this.ToOption<IContextResult>(), command, commandGenerator, Result.Fail(Error))
-            : new ContextResultOfAction(this.ToOption<IContextResult>(), command, commandGenerator, command.Call());
-        return simpleContext.Map(callableGenerator);
+            ? new ContextResultOfAction(this.ToOption<IContextResult>(), undoableCommand, commandGenerator, Result.Fail(Error))
+            : new ContextResultOfAction(this.ToOption<IContextResult>(), undoableCommand, commandGenerator, undoableCommand.Do());
+        return simpleContext.Map(resultGetterGenerator);
     }
 
-    public IContextResult<TNext> Map<TNext>(ICallableGenerator<TNext> callableGenerator) where TNext : notnull
+    public IContextResult<TNext> Map<TNext>(IResultGetterGenerator<TNext> resultGetterGenerator) where TNext : notnull
     {
-        ICallable<TNext> callable = callableGenerator.Generate();
+        IResultGetter<TNext> callable = resultGetterGenerator.Generate();
         return Failed
             ? new ContextResultOfCallable<TNext>(callable, this.ToOption<IContextResult>(), Result<TNext>.Fail(Error),
-                callableGenerator, new ResultEmitter<TNext>())
-            : new ContextResultOfCallable<TNext>(callable, this.ToOption<IContextResult>(), callable.Call(), callableGenerator,
+                resultGetterGenerator, new ResultEmitter<TNext>())
+            : new ContextResultOfCallable<TNext>(callable, this.ToOption<IContextResult>(), callable.Get(), resultGetterGenerator,
                 new ResultEmitter<TNext>());
     }
 
@@ -75,18 +76,18 @@ internal sealed class ContextResultOfCallable<TOut> : IContextResult<TOut> where
     {
         if (Succeeded) return this;
         if (_previousContext.IsNone())
-            return new ContextResultOfCallable<TOut>(_called, Option<IContextResult>.None(), _called.Call(), _callableGenerator,
+            return new ContextResultOfCallable<TOut>(_getter, Option<IContextResult>.None(), _getter.Get(), _resultGetterGenerator,
                 new ResultEmitter<TOut>());
 
         IContextResult retried = _previousContext.Data.Retry();
-        ICallable<TOut> updatedCalled = _callableGenerator.Generate();
+        IResultGetter<TOut> updatedCalled = _resultGetterGenerator.Generate();
         if (retried.Failed)
             return new ContextResultOfCallable<TOut>(updatedCalled, retried.ToOption(), Result<TOut>.Fail(retried.Error),
-                _callableGenerator, new ResultEmitter<TOut>());
+                _resultGetterGenerator, new ResultEmitter<TOut>());
 
-        Result<TOut> updatedResult = updatedCalled.Call();
+        Result<TOut> updatedResult = updatedCalled.Get();
         Emitter.Emit(updatedResult);
-        return new ContextResultOfCallable<TOut>(updatedCalled, retried.ToOption(), updatedResult, _callableGenerator,
+        return new ContextResultOfCallable<TOut>(updatedCalled, retried.ToOption(), updatedResult, _resultGetterGenerator,
             new ResultEmitter<TOut>());
     }
 }

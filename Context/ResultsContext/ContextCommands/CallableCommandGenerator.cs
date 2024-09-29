@@ -5,32 +5,32 @@ namespace Context.ResultsContext.ContextCommands;
 
 internal sealed class CallableCommandGenerator : ICommandGenerator
 {
-    private readonly ICallableGenerator _callableGenerator;
-    private readonly IActionCallableGenerator _undoGenerator;
+    private readonly IResultCommandGenerator _resultCommandGenerator;
+    private readonly ActionCallables.ICommandGenerator _undoGenerator;
 
-    public CallableCommandGenerator(ICallableGenerator callableGenerator, IActionCallableGenerator undoGenerator)
+    public CallableCommandGenerator(IResultCommandGenerator resultCommandGenerator, ActionCallables.ICommandGenerator undoGenerator)
     {
-        _callableGenerator = callableGenerator;
+        _resultCommandGenerator = resultCommandGenerator;
         _undoGenerator = undoGenerator;
     }
 
-    public ICommand Generate()
+    public IUndoableCommand Generate()
     {
-        return new CallableWrapCommand(_callableGenerator.Generate(), _undoGenerator.Generate());
+        return new CommandWrapUndoableCommand(_resultCommandGenerator.Generate(), _undoGenerator.Generate());
     }
 }
 
 internal sealed class CommandWrapper : ICommandGenerator
 {
-    private readonly ICommand _command;
+    private readonly IUndoableCommand _undoableCommand;
 
-    public CommandWrapper(ICommand command)
+    public CommandWrapper(IUndoableCommand undoableCommand)
     {
-        _command = command;
+        _undoableCommand = undoableCommand;
     }
 
-    public ICommand Generate()
+    public IUndoableCommand Generate()
     {
-        return _command;
+        return _undoableCommand;
     }
 }

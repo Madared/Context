@@ -14,8 +14,8 @@ internal sealed class CommandWithCallInputWrapperGenerator<T> : ICommandGenerato
         _commandWithCallInput = commandWithCallInput;
     }
 
-    public ICommand Generate()
+    public IUndoableCommand Generate()
     {
-        return new CommandWithCallInputWrapper<T>(_commandWithCallInput, _subscriber.Result);
+        return new UndoableCommandWithCallInputWrapper<T>(_commandWithCallInput, _subscriber.Result);
     }
 }

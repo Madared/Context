@@ -1,14 +1,15 @@
 using Context.ResultsContext.CallableGenerators;
 using Context.ResultsContext.ContextCallables;
+using ResultAndOption.Results.Commands;
 
 namespace Context.ResultsContext.ContextCommands;
 
-public interface ICommandGenerator : ICallableGenerator
+public interface ICommandGenerator : IResultCommandGenerator
 {
-    ICallable ICallableGenerator.Generate()
+    IResultCommand IResultCommandGenerator.Generate()
     {
         return Generate();
     }
 
-    new ICommand Generate();
+    new IUndoableCommand Generate();
 }
