@@ -47,4 +47,10 @@ public static class Mapping
         IResultGetterGenerator<TOut> resultGetterGenerator = new MapperResultGetterGenerator<TIn, TOut>(subscriber, mapper);
         return context.Map(resultGetterGenerator);
     }
+
+    public static IContextResult<TOut> Map<TOut>(this IContextResult contextResult, IResultGetter<TOut> resultGetter) where TOut : notnull
+    {
+        IResultGetterGenerator<TOut> resultGetterGenerator = new PassThroughResultGetterGenerator<TOut>(resultGetter);
+        return contextResult.Map(resultGetterGenerator);
+    }
 }
